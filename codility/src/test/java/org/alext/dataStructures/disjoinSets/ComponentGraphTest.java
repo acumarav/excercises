@@ -25,4 +25,9 @@ public class ComponentGraphTest {
 
         assertEquals("2 4",out);
     }
+
+    @Test
+    public void testCase25(){
+String expectedOut="2 1072";
+    }
 }
