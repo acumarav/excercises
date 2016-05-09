@@ -12,22 +12,22 @@ import static org.junit.Assert.assertEquals;
 public class ComponentGraphTest {
 
     @Test
-    public void testRun(){
-        String input="5\n" +
+    public void testRun() {
+        String input = "5\n" +
                 "1 6 \n" +
                 "2 7\n" +
                 "3 8\n" +
                 "4 9\n" +
                 "2 6";
-        ComponentGraph graph=new ComponentGraph();
+        ComponentGraph graph = new ComponentGraph();
 
         String out = graph.run(IOUtils.toInputStream(input));
 
-        assertEquals("2 4",out);
+        assertEquals("2 4", out);
     }
 
     @Test
-    public void testCase25(){
-String expectedOut="2 1072";
+    public void testCase25() {
+        String expectedOut = "2 1072";
     }
 }
