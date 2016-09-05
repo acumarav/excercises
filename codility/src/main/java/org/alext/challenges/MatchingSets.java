@@ -42,10 +42,10 @@ public class MatchingSets {
 
         Arrays.sort(Y);
 
-        int cnt=0;
+        int cnt = 0;
 
-        for(int i=0,j=X.length-1;i<j;){
-            if(X[i]<Y[i])
+        for (int i = 0, j = X.length - 1; i < j; ) {
+            //if(X[i]<Y[i])
         }
 //4,3,0 -can do
 //4,0,3 -cannot do
@@ -55,7 +55,7 @@ public class MatchingSets {
 //3,0 +
 //0,3
 
-
+        return -1;
 
     }
 
