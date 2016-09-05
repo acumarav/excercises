@@ -8,18 +8,27 @@ import java.util.Vector;
 public class ProducerConsumer {
 
 
-    public static void main(String[] args){
+    public static void main(String[] args) throws InterruptedException {
         ProducerConsumer pc=new ProducerConsumer();
         pc.runProdCons();
     }
 
-    public void runProdCons() {
+    public void runProdCons() throws InterruptedException {
         Vector sharedQueue = new Vector();
         int size = 4;
         Thread prodThread = new Thread(new Producer(sharedQueue, size), "Producer");
+
+
         Thread consThread = new Thread(new Consumer(sharedQueue, size), "Consumer");
         prodThread.start();
         consThread.start();
+
+        prodThread.join();
+
+        while(sharedQueue.size()!=0){
+            Thread.sleep(50);
+        }
+        consThread.interrupt();
     }
 
 }
