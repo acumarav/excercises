@@ -119,7 +119,7 @@ public class MpegScissorsTest {
         isoFile.getBoxes().forEach(MpegScissorsTest::printBox);
     }
     private static void printBox(Box box){
-        int depth
+        int depth=-1;//todo
         System.out.printf("BoxType: %s Sz: %8d  Offs:%8d \n",box.getType(),box.getSize(),box.getOffset());
     }
 
