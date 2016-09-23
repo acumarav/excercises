@@ -2,6 +2,7 @@ package org.alext.isoParser;
 
 import com.coremedia.iso.IsoFile;
 import com.coremedia.iso.boxes.Box;
+import com.coremedia.iso.boxes.Container;
 import com.googlecode.mp4parser.FileDataSourceImpl;
 import com.googlecode.mp4parser.MemoryDataSourceImpl;
 import com.googlecode.mp4parser.authoring.Movie;
@@ -24,6 +25,7 @@ import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Arrays;
+import java.util.Optional;
 import java.util.StringJoiner;
 import java.util.stream.Collectors;
 
@@ -58,9 +60,6 @@ public class MpegScissorsTest {
         printTrackInfo(-1, vtr);
         System.out.println("vide track samples info:");
         printTrackSamplesInfo(vtr);
-
-        /*Track snd = getFirstSounTrack(mov);
-        printTrackSamplesInfo(snd);*/
     }
 
     private void printTrackSamplesInfo(Track vtr) {
@@ -85,7 +84,6 @@ public class MpegScissorsTest {
     public void splitIntoParts() throws Exception {
         Movie mov = MovieCreator.build(sampleMp4mds);
 
-        //long endmilliseconds = mov.().getLength();
         Movie outMovie=new Movie();
 
         for(Track track: mov.getTracks())
@@ -97,12 +95,6 @@ public class MpegScissorsTest {
         }
 
         new DefaultMp4Builder().build(outMovie).writeContainer(new FileOutputStream("C:\\del\\output.mp4").getChannel());
-
-
-        /*OutputStream[] outputStreams = scissors.splitIntoParts(sampleMp4mds, 3);
-        for(int index=1;index<=outputStreams.length;index++){
-            Path tmpFile = Files.createTempFile("samp", "0" + index);
-        }*/
     }
 
     @Test
@@ -115,12 +107,22 @@ public class MpegScissorsTest {
 
     @Test
     public void testISOFileContainer() throws IOException {
+        int level=1;
         IsoFile isoFile=new IsoFile(sampleMp4mds);
-        isoFile.getBoxes().forEach(MpegScissorsTest::printBox);
+        isoFile.getBoxes().forEach(b->printBox(b, level));
     }
-    private static void printBox(Box box){
-        int depth=-1;//todo
-        System.out.printf("BoxType: %s Sz: %8d  Offs:%8d \n",box.getType(),box.getSize(),box.getOffset());
+    private static void printBox(Box box, int level){
+        char tab='\t';
+        StringBuilder sb=new StringBuilder();
+        for (int index=0;index<level;index++){
+            sb.append(tab);
+        }
+        System.out.printf("Level:%d\t%sBoxType: %s Sz: %8d  Offs:%8d \n",level,sb.toString(),box.getType(),box.getSize(),box.getOffset());
+
+        if(Container.class.isInstance(box)){
+            Container container = Container.class.cast(box);
+            container.getBoxes().forEach(b->printBox(b,level+1));
+        }
     }
 
 }
