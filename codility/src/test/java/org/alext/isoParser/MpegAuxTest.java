@@ -5,8 +5,10 @@ import org.apache.commons.io.IOUtils;
 import org.junit.Before;
 import org.junit.Test;
 
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.URISyntaxException;
 import java.net.URL;
 
 /**
@@ -24,16 +26,14 @@ public class MpegAuxTest {
     }
 
     @Test
-    public void runPlayer() throws IOException {
-        //Runtime.getRuntime().exec("c:\\Program Files (x86)\\Windows Media Player\\wmplayer.exe");
-        //"c:\Program Files (x86)\Windows Media Player\wmplayer.exe"  c:\projects\java\excercises\codility\src\test\resources\video\sample_mpeg4.mp4-muxed.mp4d
+    public void runPlayer() throws IOException, URISyntaxException {
         URL mpegUrl = MpegAuxTest.class.getResource("/video/sample_mpeg4.mp4");
-        String video = mpegUrl.getPath();
         String player = System.getenv("ProgramFiles") + "\\Windows Media Player\\wmplayer.exe";
 
-        String command = (player + video).replace("/C:", " C:");
+        File f=new File(mpegUrl.toURI());
+
+        String command = (player+" " + f.getPath());
         Runtime.getRuntime().exec(command);
-        //Runtime.getRuntime().exec(new String[]{player,video});
     }
 
 }
