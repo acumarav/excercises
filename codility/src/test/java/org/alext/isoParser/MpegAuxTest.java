@@ -26,14 +26,16 @@ public class MpegAuxTest {
     }
 
     @Test
-    public void runPlayer() throws IOException, URISyntaxException {
+    public void runPlayer() throws IOException, URISyntaxException, InterruptedException {
         URL mpegUrl = MpegAuxTest.class.getResource("/video/sample_mpeg4.mp4");
         String player = System.getenv("ProgramFiles") + "\\Windows Media Player\\wmplayer.exe";
 
         File f=new File(mpegUrl.toURI());
 
         String command = (player+" " + f.getPath());
-        Runtime.getRuntime().exec(command);
+        Process proc = Runtime.getRuntime().exec(command);
+        Thread.sleep(3500);
+        proc.destroy();
     }
 
 }
