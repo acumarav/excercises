@@ -69,4 +69,22 @@ public class SubstractFromChunkListTest {
         Assert.assertEquals(10, out.get(2).getItemsCount());
         Assert.assertEquals("three", out.get(2).getName());
     }
+
+    @Test
+    public void testCutProperChunksFive(){
+
+        List<Chunk> out = substracter.substract(chunks3x10, 30, 100);
+
+        Assert.assertEquals(0, out.size());
+    }
+
+    @Test
+    public void testCutProperChunksSix(){
+
+        List<Chunk> out = substracter.substract(chunks3x10, 29, 100);
+
+        Assert.assertEquals(1, out.size());
+        Assert.assertEquals(1, out.get(0).getItemsCount());
+        Assert.assertEquals("three", out.get(0).getName());
+    }
 }
