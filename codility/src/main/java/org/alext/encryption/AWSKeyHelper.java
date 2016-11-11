@@ -54,4 +54,19 @@ public class AWSKeyHelper {
 
         return data;
     }
+
+    public KeyData buildKeyAndHash(byte[] inputKey) {
+
+        byte[] bytes=inputKey;
+        byte[] md5HashBytes = DigestUtils.md5(bytes);
+
+        KeyData data=new KeyData(bytes, md5HashBytes);
+
+        StringBuilder sb = new StringBuilder();
+        System.out.println("Input Key: " + inputKey);
+        System.out.println("Base64 Key: " + data.getKeyBase64());
+        System.out.println("Base64 MD5 Hash: " + data.getMd5hashBase64());
+
+        return data;
+    }
 }

@@ -11,9 +11,6 @@ import java.util.Base64;
 
 import static org.junit.Assert.*;
 
-/**
- * Created by tsumaraa on 20/09/2016.
- */
 public class AWSKeyHelperTest {
     private AWSKeyHelper helper=new AWSKeyHelper();
 
@@ -35,6 +32,17 @@ public class AWSKeyHelperTest {
         AWSKeyHelper.KeyData keyData = helper.buildKeyAndHash("1234123412341234");
 
         System.out.println("Result :"+keyData.getKeyBase64());
+    }
+
+
+    @Test
+    public void testCheckAWSKeys(){
+        final String keyBase64="AQEDAHhnMi87XE+oCQ/4BecsOaWcfyngBRCdG9vQbgxBfceL+AAAAG4wbAYJKoZIhvcNAQcGoF8wXQIBADBYBgkqhkiG9w0BBwEwHgYJYIZIAWUDBAEuMBEEDNRgbIPZWIV8McQYgQIBEIAro0f3zjeqPDxALmzJH8zPNZb/an/7/kEimb+zGSbuHv8qBJQZ7GhxoFU/tA==";
+        byte[] keyBytes = Base64.getDecoder().decode(keyBase64);
+
+        AWSKeyHelper.KeyData keyData = helper.buildKeyAndHash(keyBytes);
+
+        assertEquals("4J710jXfo6uAeLd+JIuV2Q==",keyData.getMd5hashBase64());
     }
 
 }
