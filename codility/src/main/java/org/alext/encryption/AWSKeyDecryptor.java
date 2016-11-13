@@ -17,6 +17,8 @@ import com.amazonaws.services.s3.model.*;
 import org.apache.commons.io.IOUtils;
 
 import java.io.ByteArrayInputStream;
+import java.nio.ByteBuffer;
+import java.util.Base64;
 
 /**
  * Created by alex on 11/13/2016.
@@ -59,6 +61,40 @@ public class AWSKeyDecryptor {
         DescribeKeyResult result = kms2.describeKey(req);
 
         return result;
+    }
 
+    public ByteBuffer encrypt(String textToEncrypt){
+        AWSKMS kms = AWSKMSClientBuilder.standard()
+                .withRegion(Regions.EU_CENTRAL_1).withCredentials(new ProfileCredentialsProvider()).build();
+        String keyId  = "arn:aws:kms:eu-central-1:636713281216:key/0b0c3ae9-f3dc-47c3-8980-5721097eb4c4";
+
+        EncryptRequest req = new EncryptRequest().withKeyId(keyId).withPlaintext(ByteBuffer.wrap(textToEncrypt.getBytes()));
+        ByteBuffer ecryptedBytes = kms.encrypt(req).getCiphertextBlob();
+
+        return ecryptedBytes;
+    }
+
+    public String decrypt(ByteBuffer encrypted){
+        AWSKMS kms = AWSKMSClientBuilder.standard()
+                .withRegion(Regions.EU_CENTRAL_1).withCredentials(new ProfileCredentialsProvider()).build();
+
+        DecryptRequest decryptRequest = new DecryptRequest().withCiphertextBlob(encrypted);
+
+        DecryptResult decryptResult = kms.decrypt(decryptRequest);
+
+        return new String(decryptResult.getPlaintext().array());
+    }
+
+    public DecryptResult decodeStringWithKey(byte[] encryptionKeyBytes){
+        AWSKMS kms = AWSKMSClientBuilder.standard()
+                .withRegion(Regions.EU_CENTRAL_1).withCredentials(new ProfileCredentialsProvider()).build();
+        String keyId  = "arn:aws:kms:eu-central-1:636713281216:key/0b0c3ae9-f3dc-47c3-8980-5721097eb4c4";
+
+        DecryptRequest decryptRequest=new DecryptRequest().withCiphertextBlob(ByteBuffer.wrap(encryptionKeyBytes));
+
+        //decryptRequest.setCiphertextBlob();
+        DecryptResult decrypt = kms.decrypt(decryptRequest);
+
+        return decrypt;
     }
 }
