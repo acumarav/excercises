@@ -19,6 +19,7 @@ import org.apache.commons.io.IOUtils;
 import java.io.ByteArrayInputStream;
 import java.nio.ByteBuffer;
 import java.util.Base64;
+import java.util.Map;
 
 /**
  * Created by alex on 11/13/2016.
@@ -85,14 +86,13 @@ public class AWSKeyDecryptor {
         return new String(decryptResult.getPlaintext().array());
     }
 
-    public DecryptResult decodeStringWithKey(byte[] encryptionKeyBytes){
+    public DecryptResult decodeStringWithKey(byte[] encryptionKeyBytes, Map<String, String> transcoderEncryptionContext){
         AWSKMS kms = AWSKMSClientBuilder.standard()
                 .withRegion(Regions.EU_CENTRAL_1).withCredentials(new ProfileCredentialsProvider()).build();
         String keyId  = "arn:aws:kms:eu-central-1:636713281216:key/0b0c3ae9-f3dc-47c3-8980-5721097eb4c4";
 
-        DecryptRequest decryptRequest=new DecryptRequest().withCiphertextBlob(ByteBuffer.wrap(encryptionKeyBytes));
+        DecryptRequest decryptRequest=new DecryptRequest().withCiphertextBlob(ByteBuffer.wrap(encryptionKeyBytes)).withEncryptionContext(transcoderEncryptionContext);
 
-        //decryptRequest.setCiphertextBlob();
         DecryptResult decrypt = kms.decrypt(decryptRequest);
 
         return decrypt;
