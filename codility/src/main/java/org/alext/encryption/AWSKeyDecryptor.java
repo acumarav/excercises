@@ -89,7 +89,6 @@ public class AWSKeyDecryptor {
     public DecryptResult decodeStringWithKey(byte[] encryptionKeyBytes, Map<String, String> transcoderEncryptionContext){
         AWSKMS kms = AWSKMSClientBuilder.standard()
                 .withRegion(Regions.EU_CENTRAL_1).withCredentials(new ProfileCredentialsProvider()).build();
-        String keyId  = "arn:aws:kms:eu-central-1:636713281216:key/0b0c3ae9-f3dc-47c3-8980-5721097eb4c4";
 
         DecryptRequest decryptRequest=new DecryptRequest().withCiphertextBlob(ByteBuffer.wrap(encryptionKeyBytes)).withEncryptionContext(transcoderEncryptionContext);
 
