@@ -24,6 +24,8 @@ import java.security.InvalidAlgorithmParameterException;
 import java.security.InvalidKeyException;
 import java.security.Key;
 import java.security.NoSuchAlgorithmException;
+import java.security.spec.AlgorithmParameterSpec;
+import java.security.spec.KeySpec;
 import java.util.Base64;
 import java.util.HashMap;
 import java.util.Map;
@@ -90,6 +92,29 @@ public class AWSKeyDecryptorTest {
         }
 
         FileUtils.writeByteArrayToFile(outFile,outBytes);
+    }
+
+    @Test
+    public void testSecondFileNov13() throws Exception {
+        String encryptedKeyBase64="AQEDAHhnMi87XE+oCQ/4BecsOaWcfyngBRCdG9vQbgxBfceL+AAAAG4wbAYJKoZIhvcNAQcGoF8wXQIBADBYBgkqhkiG9w0BBwEwHgYJYIZIAWUDBAEuMBEEDCV1zwV52WzlLsqyYwIBEIArYoqUQg5g1m1M/2BBx4CMaysdoque6ZAneA32bLrACSeWkAQ/XehnnagYYQ==";
+        String vector="t4aJsOMvBiKgqeNhh7fonA==";
+
+        Map<String, String> transcoderEncryptionContext = new HashMap<String, String>();
+        transcoderEncryptionContext.put("service", "elastictranscoder.amazonaws.com");
+
+        DecryptResult decrKeyResults = decryptor.decodeStringWithKey(Base64.getDecoder().decode(encryptedKeyBase64), transcoderEncryptionContext);
+
+        SecretKeySpec keySpec=new SecretKeySpec(decrKeyResults.getPlaintext().array(),"AES");
+        Cipher aesCipher = Cipher.getInstance("AES/CBC/PKCS5Padding");
+        IvParameterSpec ivspec = new IvParameterSpec(Base64.getDecoder().decode(vector));
+        aesCipher.init(Cipher.DECRYPT_MODE,keySpec, ivspec);
+
+        byte[] inBytes = FileUtils.readFileToByteArray(new File("e:\\videos\\liniusFiles\\enc_web_frankey_sample.mp4"));
+        byte[] outBytes = aesCipher.doFinal(inBytes);
+        /*ByteBuffer clearKeyButes = decrKeyResults.getPlaintext();
+        String key=Base64.getEncoder().encodeToString(clearKeyButes.array());
+        System.out.println("Key (base64): " +key);
+        Assert.assertNotNull(decrKeyResults);*/
     }
 
 
