@@ -19,8 +19,6 @@ public class HangingThread {
 
 
     public int runFutureCalculations(int scale) {
-
-
         List<MyTask> tasks = new ArrayList<>();
         for (int index = 0; index < scale; index++) {
 
@@ -79,6 +77,22 @@ public class HangingThread {
         } catch (Exception ex) {
             System.out.println(Thread.currentThread().getName() + " thread was interrupted");
             return -1;
+        }
+    }
+
+
+    private class IndexTask extends FutureTask {
+        private int index;
+        private Runnable task;
+
+        public IndexTask(int index, Runnable task) {
+            super(() -> task);
+            this.task = task;
+            this.index = index;
+        }
+
+        private IndexTask cloneTask() {
+            return new IndexTask(this.index, this.task);
         }
     }
 
