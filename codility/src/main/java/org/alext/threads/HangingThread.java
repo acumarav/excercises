@@ -3,7 +3,6 @@ package org.alext.threads;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ForkJoinPool;
 import java.util.concurrent.FutureTask;
 import java.util.concurrent.TimeUnit;
@@ -16,10 +15,11 @@ public class HangingThread {
     private static Object LOCK = new Object();
 
     private ForkJoinPool executors = ForkJoinPool.commonPool();
+    //ExecutorService executors = Executors.newCachedThreadPool();
 
 
     public int runFutureCalculations(int scale) {
-        //ExecutorService executors = Executors.newCachedThreadPool();
+
 
         List<MyTask> tasks = new ArrayList<>();
         for (int index = 0; index < scale; index++) {
@@ -58,46 +58,6 @@ public class HangingThread {
             return sum + processFutures(failed);
         }
     }
-
-    /*public int runCalculations(int scale) {
-
-        List<CompletableFuture> futures = new ArrayList<>();
-        for (int index = 0; index < scale; index++) {
-            final int finalIndex = index;
-            CompletableFuture<Integer> future = CompletableFuture.supplyAsync(() -> this.calculate(finalIndex)).exceptionally(er -> {
-                System.out.println("Thread interruption");
-                Thread.currentThread().interrupt();
-                return -1;
-            });
-
-            futures.add(future);
-        }
-
-        System.out.println("tasks was submit");
-
-        int sum = 0;
-        for (CompletableFuture<Integer> future : futures) {
-            try {
-                int val = future.get(100, TimeUnit.MILLISECONDS);
-                sum += val;
-
-            } catch (Throwable e) {
-
-
-                future.cancel(true);
-                future.join();
-
-                echoPool();
-            }
-        }
-
-        return sum;
-    }*/
-
-    private static void echoPool() {
-        System.out.println("Pool State: " + ForkJoinPool.commonPool().toString());
-    }
-
 
     private static int calculate(int value) {
         try {
