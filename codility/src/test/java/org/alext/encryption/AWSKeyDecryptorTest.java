@@ -61,7 +61,7 @@ public class AWSKeyDecryptorTest {
 
         ByteBuffer clearKeyButes = decrKeyResults.getPlaintext();
         String key=Base64.getEncoder().encodeToString(clearKeyButes.array());
-        System.out.println("Key (base64): " +key);
+        System.out.println("Decrypted Key (base64): " +key);
         Assert.assertNotNull(decrKeyResults);
 
        /* String initVector="3hYf9TJa6rFx04T+oNqXXg==";
