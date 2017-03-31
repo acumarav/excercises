@@ -2,7 +2,9 @@ package org.alext.threads;
 
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
+import java.util.concurrent.Callable;
 import java.util.concurrent.ForkJoinPool;
 import java.util.concurrent.FutureTask;
 import java.util.concurrent.TimeUnit;
@@ -19,30 +21,35 @@ public class HangingThread {
 
 
     public int runFutureCalculations(int scale) {
-        List<MyTask> tasks = new ArrayList<>();
+        List<IndexTask<Integer>> tasks = new ArrayList<>();
         for (int index = 0; index < scale; index++) {
 
-            MyTask task = new MyTask(index);
+            int finalIndex = index;
+            IndexTask<Integer> task = new IndexTask(index, () -> calculate(finalIndex));
             tasks.add(task);
         }
 
-        return processFutures(tasks);
+        Integer[] results = new Integer[tasks.size()];
+
+        processFutures(tasks, results);
+
+        return Arrays.stream(results).reduce(Integer::sum).orElse(-1);
     }
 
-    private int processFutures(List<MyTask> futures) {
+    private <T> void processFutures(List<IndexTask<T>> tasks, T[] results) {
 
-        System.out.println("processing: " + futures.size());
+        System.out.println("processing: " + tasks.size());
 
-        futures.forEach(fut -> executors.execute(fut));
+        tasks.forEach(fut -> executors.execute(fut));
 
-        List<MyTask> failed = new ArrayList<>();
+        List<IndexTask<T>> failed = new ArrayList<>();
 
-        int sum = 0;
-        for (MyTask task : futures) {
+        for (IndexTask<T> task : tasks) {
 
             try {
-                int val = task.get(20, TimeUnit.MILLISECONDS);
-                sum += val;
+                T val = task.get(20, TimeUnit.MILLISECONDS);
+                results[task.index] = val;
+                //System.out.println("Setting: "+val +" at index: "+task.index);
 
             } catch (Throwable e) {
                 task.cancel(true);
@@ -50,10 +57,8 @@ public class HangingThread {
             }
         }
 
-        if (failed.isEmpty()) {
-            return sum;
-        } else {
-            return sum + processFutures(failed);
+        if (!failed.isEmpty()) {
+            processFutures(failed, results);
         }
     }
 
@@ -65,9 +70,9 @@ public class HangingThread {
             double rnd = Math.random() * 10;
 
             if (rnd >= 6.0) {
-                System.out.println(Thread.currentThread().getName() + "- try to acquire LOCK");
+                //System.out.println(Thread.currentThread().getName() + "- try to acquire LOCK");
                 synchronized (LOCK) {
-                    System.out.println("LOCK acquired by: " + Thread.currentThread().getName());
+                    //System.out.println("LOCK acquired by: " + Thread.currentThread().getName());
                     Thread.sleep(60 * 60 * 1000);
                 }
 
@@ -75,18 +80,18 @@ public class HangingThread {
 
             return value;
         } catch (Exception ex) {
-            System.out.println(Thread.currentThread().getName() + " thread was interrupted");
+            //System.out.println(Thread.currentThread().getName() + " thread was interrupted");
             return -1;
         }
     }
 
 
-    private class IndexTask extends FutureTask {
+    private class IndexTask<V> extends FutureTask<V> {
         private int index;
-        private Runnable task;
+        private Callable<V> task;
 
-        public IndexTask(int index, Runnable task) {
-            super(() -> task);
+        public IndexTask(int index, Callable<V> task) {
+            super(task);
             this.task = task;
             this.index = index;
         }
